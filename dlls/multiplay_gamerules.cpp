@@ -26,6 +26,7 @@
 #include	"game.h"
 #include	"items.h"
 #include	"voice_gamemgr.h"
+#include 	<ctype.h>
 
 extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;
@@ -41,8 +42,6 @@ extern int g_teamplay;
 #define AMMO_RESPAWN_TIME	20
 
 float g_flIntermissionStartTime = 0;
-
-CVoiceGameMgr	g_VoiceGameMgr;
 
 class CMultiplayGameMgrHelper : public IVoiceGameMgrHelper
 {
@@ -68,8 +67,6 @@ static CMultiplayGameMgrHelper g_GameMgrHelper;
 
 CHalfLifeMultiplay :: CHalfLifeMultiplay()
 {
-	g_VoiceGameMgr.Init(&g_GameMgrHelper, gpGlobals->maxClients);
-
 	RefreshSkillData();
 	m_flIntermissionEndTime = 0;
 	g_flIntermissionStartTime = 0;
@@ -115,9 +112,6 @@ CHalfLifeMultiplay :: CHalfLifeMultiplay()
 
 BOOL CHalfLifeMultiplay::ClientCommand( CBasePlayer *pPlayer, const char *pcmd )
 {
-	if(g_VoiceGameMgr.ClientCommand(pPlayer, pcmd))
-		return TRUE;
-
 	return CGameRules::ClientCommand(pPlayer, pcmd);
 }
 
@@ -185,7 +179,6 @@ extern cvar_t mp_chattime;
 //=========================================================
 void CHalfLifeMultiplay :: Think ( void )
 {
-	g_VoiceGameMgr.Update(gpGlobals->frametime);
 
 	///// Check game rules /////
 	static int last_frags;
@@ -396,7 +389,6 @@ BOOL CHalfLifeMultiplay :: GetNextBestWeapon( CBasePlayer *pPlayer, CBasePlayerI
 //=========================================================
 BOOL CHalfLifeMultiplay :: ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] )
 {
-	g_VoiceGameMgr.ClientConnected(pEntity);
 	return TRUE;
 }
 
@@ -1370,15 +1362,15 @@ int ReloadMapCycleFile( char *filename, mapcycle_t *cycle )
 					if ( s && s[0] )
 					{
 						item->minplayers = atoi( s );
-						item->minplayers = max( item->minplayers, 0 );
-						item->minplayers = min( item->minplayers, gpGlobals->maxClients );
+						item->minplayers = Q_max( item->minplayers, 0 );
+						item->minplayers = Q_min( item->minplayers, gpGlobals->maxClients );
 					}
 					s = g_engfuncs.pfnInfoKeyValue( szBuffer, "maxplayers" );
 					if ( s && s[0] )
 					{
 						item->maxplayers = atoi( s );
-						item->maxplayers = max( item->maxplayers, 0 );
-						item->maxplayers = min( item->maxplayers, gpGlobals->maxClients );
+						item->maxplayers = Q_max( item->maxplayers, 0 );
+						item->maxplayers = Q_min( item->maxplayers, gpGlobals->maxClients );
 					}
 
 					// Remove keys

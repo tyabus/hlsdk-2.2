@@ -45,11 +45,7 @@ LINK_ENTITY_TO_CLASS( weapon_gauss, CGauss );
 
 float CGauss::GetFullChargeTime( void )
 {
-#ifdef CLIENT_DLL
-	if ( bIsMultiplayer() )
-#else
 	if ( g_pGameRules->IsMultiplayer() )
-#endif
 	{
 		return 1.5;
 	}
@@ -225,11 +221,7 @@ void CGauss::SecondaryAttack()
 		// during the charging process, eat one bit of ammo every once in a while
 		if ( UTIL_WeaponTimeBase() >= m_pPlayer->m_flNextAmmoBurn && m_pPlayer->m_flNextAmmoBurn != 1000 )
 		{
-#ifdef CLIENT_DLL
-	if ( bIsMultiplayer() )
-#else
 	if ( g_pGameRules->IsMultiplayer() )
-#endif
 			{
 				m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 				m_pPlayer->m_flNextAmmoBurn = UTIL_WeaponTimeBase() + 0.1;
@@ -321,11 +313,7 @@ void CGauss::StartFire( void )
 	if ( m_fPrimaryFire )
 	{
 		// fixed damage on primary attack
-#ifdef CLIENT_DLL
-		flDamage = 20;
-#else 
 		flDamage = gSkillData.plrDmgGauss;
-#endif
 	}
 
 	if (m_fInAttack != 3)

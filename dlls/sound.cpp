@@ -23,7 +23,7 @@
 #include "player.h"
 #include "talkmonster.h"
 #include "gamerules.h"
-
+#include <ctype.h>
 
 static char *memfgets( byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bufferSize );
 
@@ -193,7 +193,7 @@ void CAmbientGeneric :: Spawn( void )
 	{
 		ALERT( at_error, "EMPTY AMBIENT AT: %f, %f, %f\n", pev->origin.x, pev->origin.y, pev->origin.z );
 		pev->nextthink = gpGlobals->time + 0.1;
-		SetThink( SUB_Remove );
+		SetThink( &SUB_Remove );
 		return;
 	}
     pev->solid		= SOLID_NOT;
@@ -203,12 +203,12 @@ void CAmbientGeneric :: Spawn( void )
 	// of ambient sound's pitch or volume. Don't
 	// start thinking yet.
 
-	SetThink(RampThink);
+	SetThink( &RampThink);
 	pev->nextthink = 0;
 
 	// allow on/off switching via 'use' function.
 
-	SetUse ( ToggleUse );
+	SetUse( &ToggleUse );
 	
 	m_fActive = FALSE;
 
@@ -1586,7 +1586,7 @@ void TEXTURETYPE_Init()
 			continue;
 
 		// null-terminate name and save in sentences array
-		j = min (j, CBTEXTURENAMEMAX-1+i);
+		j = Q_min (j, CBTEXTURENAMEMAX-1+i);
 		buffer[j] = 0;
 		strcpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]));
 	}
@@ -1824,19 +1824,19 @@ void CSpeaker :: Spawn( void )
 	{
 		ALERT( at_error, "SPEAKER with no Level/Sentence! at: %f, %f, %f\n", pev->origin.x, pev->origin.y, pev->origin.z );
 		pev->nextthink = gpGlobals->time + 0.1;
-		SetThink( SUB_Remove );
+		SetThink( &SUB_Remove );
 		return;
 	}
     pev->solid		= SOLID_NOT;
     pev->movetype	= MOVETYPE_NONE;
 
 	
-	SetThink(SpeakerThink);
+	SetThink( &SpeakerThink);
 	pev->nextthink = 0.0;
 
 	// allow on/off switching via 'use' function.
 
-	SetUse ( ToggleUse );
+	SetUse( &ToggleUse );
 
 	Precache( );
 }

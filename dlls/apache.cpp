@@ -139,12 +139,12 @@ void CApache :: Spawn( void )
 
 	if (pev->spawnflags & SF_WAITFORTRIGGER)
 	{
-		SetUse( StartupUse );
+		SetUse( &StartupUse );
 	}
 	else
 	{
-		SetThink( HuntThink );
-		SetTouch( FlyTouch );
+		SetThink( &HuntThink );
+		SetTouch( &FlyTouch );
 		pev->nextthink = gpGlobals->time + 1.0;
 	}
 
@@ -186,8 +186,8 @@ void CApache::NullThink( void )
 
 void CApache::StartupUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	SetThink( HuntThink );
-	SetTouch( FlyTouch );
+	SetThink( &HuntThink );
+	SetTouch( &FlyTouch );
 	pev->nextthink = gpGlobals->time + 0.1;
 	SetUse( NULL );
 }
@@ -200,8 +200,8 @@ void CApache :: Killed( entvars_t *pevAttacker, int iGib )
 	STOP_SOUND( ENT(pev), CHAN_STATIC, "apache/ap_rotor2.wav" );
 
 	UTIL_SetSize( pev, Vector( -32, -32, -64), Vector( 32, 32, 0) );
-	SetThink( DyingThink );
-	SetTouch( CrashTouch );
+	SetThink( &DyingThink );
+	SetTouch( &CrashTouch );
 	pev->nextthink = gpGlobals->time + 0.1;
 	pev->health = 0;
 	pev->takedamage = DAMAGE_NO;
@@ -402,7 +402,7 @@ void CApache :: DyingThink( void )
 			WRITE_BYTE( BREAK_METAL );
 		MESSAGE_END();
 
-		SetThink( SUB_Remove );
+		SetThink( &SUB_Remove );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 }
@@ -812,13 +812,13 @@ BOOL CApache :: FireGun( )
 		angles.x = angles.x + 360;
 
 	if (angles.x > m_angGun.x)
-		m_angGun.x = min( angles.x, m_angGun.x + 12 );
+		m_angGun.x = Q_min( angles.x, m_angGun.x + 12 );
 	if (angles.x < m_angGun.x)
-		m_angGun.x = max( angles.x, m_angGun.x - 12 );
+		m_angGun.x = Q_max( angles.x, m_angGun.x - 12 );
 	if (angles.y > m_angGun.y)
-		m_angGun.y = min( angles.y, m_angGun.y + 12 );
+		m_angGun.y = Q_min( angles.y, m_angGun.y + 12 );
 	if (angles.y < m_angGun.y)
-		m_angGun.y = max( angles.y, m_angGun.y - 12 );
+		m_angGun.y = Q_max( angles.y, m_angGun.y - 12 );
 
 	m_angGun.y = SetBoneController( 0, m_angGun.y );
 	m_angGun.x = SetBoneController( 1, m_angGun.x );
@@ -972,8 +972,8 @@ void CApacheHVR :: Spawn( void )
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
 	UTIL_SetOrigin( pev, pev->origin );
 
-	SetThink( IgniteThink );
-	SetTouch( ExplodeTouch );
+	SetThink( &IgniteThink );
+	SetTouch( &ExplodeTouch );
 
 	UTIL_MakeAimVectors( pev->angles );
 	m_vecForward = gpGlobals->v_forward;
@@ -1019,7 +1019,7 @@ void CApacheHVR :: IgniteThink( void  )
 	MESSAGE_END();  // move PHS/PVS data sending into here (SEND_ALL, SEND_PVS, SEND_PHS)
 
 	// set to accelerate
-	SetThink( AccelerateThink );
+	SetThink( &AccelerateThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 

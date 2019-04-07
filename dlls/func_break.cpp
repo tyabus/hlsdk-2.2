@@ -164,7 +164,7 @@ void CBreakable::Spawn( void )
 
 	SET_MODEL(ENT(pev), STRING(pev->model) );//set size and link into world.
 
-	SetTouch( BreakTouch );
+	SetTouch( &BreakTouch );
 	if ( FBitSet( pev->spawnflags, SF_BREAK_TRIGGER_ONLY ) )		// Only break on trigger
 		SetTouch( NULL );
 
@@ -459,7 +459,7 @@ void CBreakable::BreakTouch( CBaseEntity *pOther )
 		// play creaking sound here.
 		DamageSound();
 
-		SetThink ( Die );
+		SetThink( &Die );
 		SetTouch( NULL );
 		
 		if ( m_flDelay == 0 )
@@ -743,7 +743,7 @@ void CBreakable::Die( void )
 	// Fire targets on break
 	SUB_UseTargets( NULL, USE_TOGGLE, 0 );
 
-	SetThink( SUB_Remove );
+	SetThink( &SUB_Remove );
 	pev->nextthink = pev->ltime + 0.1;
 	if ( m_iszSpawnObject )
 		CBaseEntity::Create( (char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict() );
@@ -976,7 +976,7 @@ void CPushable :: Move( CBaseEntity *pOther, int push )
 			{
 				m_lastSound = RANDOM_LONG(0,2);
 				EMIT_SOUND(ENT(pev), CHAN_WEAPON, m_soundNames[m_lastSound], 0.5, ATTN_NORM);
-	//			SetThink( StopSound );
+	//			SetThink( &StopSound );
 	//			pev->nextthink = pev->ltime + 0.1;
 			}
 			else

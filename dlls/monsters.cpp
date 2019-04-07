@@ -1989,7 +1989,7 @@ void CBaseMonster::MoveExecute( CBaseEntity *pTargetEnt, const Vector &vecDir, f
 	while (flTotal > 0.001)
 	{
 		// don't walk more than 16 units or stairs stop working
-		flStep = min( 16.0, flTotal );
+		flStep = Q_min( 16.0, flTotal );
 		UTIL_MoveToOrigin ( ENT(pev), m_Route[ m_iRouteIndex ].vecLocation, flStep, MOVE_NORMAL );
 		flTotal -= flStep;
 	}
@@ -2044,9 +2044,9 @@ void CBaseMonster :: MonsterInit ( void )
 	// set eye position
 	SetEyePosition();
 
-	SetThink( MonsterInitThink );
+	SetThink( &MonsterInitThink );
 	pev->nextthink = gpGlobals->time + 0.1;
-	SetUse ( MonsterUse );
+	SetUse( &MonsterUse );
 }
 
 //=========================================================
@@ -2146,7 +2146,7 @@ void CBaseMonster :: StartMonster ( void )
 
 	// Delay drop to floor to make sure each door in the level has had its chance to spawn
 	// Spread think times so that they don't all happen at the same time (Carmack)
-	SetThink ( CallMonsterThink );
+	SetThink( &CallMonsterThink );
 	pev->nextthink += RANDOM_FLOAT(0.1, 0.4); // spread think times.
 	
 	if ( !FStringNull(pev->targetname) )// wait until triggered
@@ -3259,7 +3259,7 @@ void CBaseMonster::CorpseFallThink( void )
 {
 	if ( pev->flags & FL_ONGROUND )
 	{
-		SetThink ( NULL );
+		SetThink( NULL );
 
 		SetSequenceBox( );
 		UTIL_SetOrigin( pev, pev->origin );// link into world.
@@ -3289,7 +3289,7 @@ void CBaseMonster :: MonsterInitDead( void )
 
 	// Setup health counters, etc.
 	BecomeDead();
-	SetThink( CorpseFallThink );
+	SetThink( &CorpseFallThink );
 	pev->nextthink = gpGlobals->time + 0.5;
 }
 

@@ -763,7 +763,7 @@ void CBasePlayer::PackDeadPlayerItems( void )
 	pWeaponBox->pev->angles.x = 0;// don't let weaponbox tilt.
 	pWeaponBox->pev->angles.z = 0;
 
-	pWeaponBox->SetThink( CWeaponBox::Kill );
+	pWeaponBox->SetThink( &CWeaponBox::Kill );
 	pWeaponBox->pev->nextthink = gpGlobals->time + 120;
 
 // back these two lists up to their first elements
@@ -922,7 +922,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	pev->angles.x = 0;
 	pev->angles.z = 0;
 
-	SetThink(PlayerDeathThink);
+	SetThink( &PlayerDeathThink);
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -1897,7 +1897,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 				// after the player has been drowning and finally takes a breath
 				if (m_idrowndmg > m_idrownrestored)
 				{
-					int idif = min(m_idrowndmg - m_idrownrestored, 10);
+					int idif = Q_min(m_idrowndmg - m_idrownrestored, 10);
 
 					TakeHealth(idif, DMG_GENERIC);
 					m_idrownrestored += idif;
@@ -2469,23 +2469,23 @@ pt_end:
 				
 				if ( gun && gun->UseDecrement() )
 				{
-					gun->m_flNextPrimaryAttack		= max( gun->m_flNextPrimaryAttack - gpGlobals->frametime, -1.0 );
-					gun->m_flNextSecondaryAttack	= max( gun->m_flNextSecondaryAttack - gpGlobals->frametime, -0.001 );
+					gun->m_flNextPrimaryAttack		= Q_max( gun->m_flNextPrimaryAttack - gpGlobals->frametime, -1.0 );
+					gun->m_flNextSecondaryAttack	= Q_max( gun->m_flNextSecondaryAttack - gpGlobals->frametime, -0.001 );
 
 					if ( gun->m_flTimeWeaponIdle != 1000 )
 					{
-						gun->m_flTimeWeaponIdle		= max( gun->m_flTimeWeaponIdle - gpGlobals->frametime, -0.001 );
+						gun->m_flTimeWeaponIdle		= Q_max( gun->m_flTimeWeaponIdle - gpGlobals->frametime, -0.001 );
 					}
 
 					if ( gun->pev->fuser1 != 1000 )
 					{
-						gun->pev->fuser1	= max( gun->pev->fuser1 - gpGlobals->frametime, -0.001 );
+						gun->pev->fuser1	= Q_max( gun->pev->fuser1 - gpGlobals->frametime, -0.001 );
 					}
 
 					// Only decrement if not flagged as NO_DECREMENT
 //					if ( gun->m_flPumpTime != 1000 )
 				//	{
-				//		gun->m_flPumpTime	= max( gun->m_flPumpTime - gpGlobals->frametime, -0.001 );
+				//		gun->m_flPumpTime	= Q_max( gun->m_flPumpTime - gpGlobals->frametime, -0.001 );
 				//	}
 					
 				}
@@ -3090,7 +3090,7 @@ void CBloodSplat::Spawn ( entvars_t *pevOwner )
 	pev->angles = pevOwner->v_angle;
 	pev->owner = ENT(pevOwner);
 
-	SetThink ( Spray );
+	SetThink( &Spray );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -3105,7 +3105,7 @@ void CBloodSplat::Spray ( void )
 
 		UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
 	}
-	SetThink ( SUB_Remove );
+	SetThink( &SUB_Remove );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -3469,7 +3469,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		if ( pEntity )
 		{
 			if ( pEntity->pev->takedamage )
-				pEntity->SetThink(SUB_Remove);
+				pEntity->SetThink( &SUB_Remove);
 		}
 		break;
 	}
@@ -3600,7 +3600,7 @@ int CBasePlayer :: GiveAmmo( int iCount, char *szName, int iMax )
 	if ( i < 0 || i >= MAX_AMMO_SLOTS )
 		return -1;
 
-	int iAdd = min( iCount, iMax - m_rgAmmo[i] );
+	int iAdd = Q_min( iCount, iMax - m_rgAmmo[i] );
 	if ( iAdd < 1 )
 		return i;
 
@@ -3724,7 +3724,7 @@ void CBasePlayer::SendAmmoUpdate(void)
 			// send "Ammo" update message
 			MESSAGE_BEGIN( MSG_ONE, gmsgAmmoX, NULL, pev );
 				WRITE_BYTE( i );
-				WRITE_BYTE( max( min( m_rgAmmo[i], 254 ), 0 ) );  // clamp the value to one byte
+				WRITE_BYTE( Q_max( Q_min( m_rgAmmo[i], 254 ), 0 ) );  // clamp the value to one byte
 			MESSAGE_END();
 		}
 	}
@@ -3796,7 +3796,7 @@ void CBasePlayer :: UpdateClientData( void )
 
 	if (pev->health != m_iClientHealth)
 	{
-		int iHealth = max( pev->health, 0 );  // make sure that no negative health values are sent
+		int iHealth = Q_max( pev->health, 0 );  // make sure that no negative health values are sent
 
 		// send "health" update message
 		MESSAGE_BEGIN( MSG_ONE, gmsgHealth, NULL, pev );
@@ -4598,7 +4598,7 @@ void CRevertSaved :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 {
 	UTIL_ScreenFadeAll( pev->rendercolor, Duration(), HoldTime(), pev->renderamt, FFADE_OUT );
 	pev->nextthink = gpGlobals->time + MessageTime();
-	SetThink( MessageThink );
+	SetThink( &MessageThink );
 }
 
 
@@ -4609,7 +4609,7 @@ void CRevertSaved :: MessageThink( void )
 	if ( nextThink > 0 ) 
 	{
 		pev->nextthink = gpGlobals->time + nextThink;
-		SetThink( LoadThink );
+		SetThink( &LoadThink );
 	}
 	else
 		LoadThink();

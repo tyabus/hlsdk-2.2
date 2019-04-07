@@ -18,7 +18,9 @@
 #ifndef ACTIVITY_H
 #include "activity.h"
 #endif
-
+// EDIT
+#include <cstring>
+// END OF EDIT
 #ifndef ENGINECALLBACK_H
 #include "enginecallback.h"
 #endif

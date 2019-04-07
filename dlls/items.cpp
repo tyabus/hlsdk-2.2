@@ -93,7 +93,7 @@ void CItem::Spawn( void )
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetOrigin( pev, pev->origin );
 	UTIL_SetSize(pev, Vector(-16, -16, 0), Vector(16, 16, 16));
-	SetTouch(ItemTouch);
+	SetTouch( &ItemTouch);
 
 	if (DROP_TO_FLOOR(ENT(pev)) == 0)
 	{
@@ -151,7 +151,7 @@ CBaseEntity* CItem::Respawn( void )
 
 	UTIL_SetOrigin( pev, g_pGameRules->VecItemRespawnSpot( this ) );// blip to whereever you should respawn.
 
-	SetThink ( Materialize );
+	SetThink( &Materialize );
 	pev->nextthink = g_pGameRules->FlItemRespawnTime( this ); 
 	return this;
 }
@@ -166,7 +166,7 @@ void CItem::Materialize( void )
 		pev->effects |= EF_MUZZLEFLASH;
 	}
 
-	SetTouch( ItemTouch );
+	SetTouch( &ItemTouch );
 }
 
 #define SF_SUIT_SHORTLOGON		0x0001
@@ -229,7 +229,7 @@ class CItemBattery : public CItem
 			char szcharge[64];
 
 			pPlayer->pev->armorvalue += gSkillData.batteryCapacity;
-			pPlayer->pev->armorvalue = min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
+			pPlayer->pev->armorvalue = Q_min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
 
 			EMIT_SOUND( pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
 
